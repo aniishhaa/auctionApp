@@ -45,7 +45,7 @@ function Login() {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Login</button>
-        <p>Try emails: admin@belc.com / staff@belc.com / ansstaff@belc.com</p>
+        <p>Try emails: admin@m.com / staff@m.com / ansstaff@m.com</p>
       </form>
     </div>
   );
