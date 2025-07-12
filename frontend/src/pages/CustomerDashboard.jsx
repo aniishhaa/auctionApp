@@ -97,27 +97,22 @@ function CustomerDashboard() {
           ☰
         </div>
         <h2 className="logo">Auction</h2>
-        <input
-          className="search-input"
-          type="text"
-          placeholder="Search auctions..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <button className="bid-button" onClick={() => setSelectedAuction({})}>
-          Place Bid
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto', gap: '1rem' }}>
+          <input
+            className="search-input"
+            type="text"
+            placeholder="Search auctions..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <button className="bid-button" onClick={() => setSelectedAuction({})}>
+            Place Bid
+          </button>
+        </div>
       </nav>
-      <div style={{
-        background: "#e3e9f7",
-        color: "#2575fc",
-        padding: "0.5rem 2rem",
-        fontWeight: 600,
-        fontSize: "1.1rem",
-        letterSpacing: "1px"
-      }}>
-        Current App Time: {currentTime.toLocaleString()} ({Intl.DateTimeFormat().resolvedOptions().timeZone})
-      </div>
+      <span className="current-time">
+        🕒 {currentTime.toLocaleString()} ({Intl.DateTimeFormat().resolvedOptions().timeZone})
+      </span>
       {/* Side Menu */}
       {sideMenuOpen && (
         <div className="side-menu">

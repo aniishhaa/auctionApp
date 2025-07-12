@@ -15,6 +15,8 @@
   margin: 0;
   font-size: 1.5rem;
   font-weight: bold;
+  flex: 1;
+  text-align: left;
 }
 
 .menu-icon {
@@ -29,6 +31,7 @@
   border-radius: 6px;
   border: none;
   width: 250px;
+  margin-left: auto;
 }
 
 .bid-button {
@@ -39,6 +42,7 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  margin-left: 1rem;
 }
 
 .bid-button:hover {
@@ -219,4 +223,20 @@
 
 .modal-buttons button:hover {
   opacity: 0.9;
+}
+
+.dashboard-container {
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.current-time {
+  display: block;
+  background: #e3e9f7;
+  color: #111;
+  padding: 0.5rem 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  text-align: right;
+  margin-bottom: 1rem;
 }
