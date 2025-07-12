@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { api } from "../services/api";
 import "./StaffDashboard.css";
+import CustomNotification from "../components/CustomNotification"; // adjust path as needed
+import ConfirmModal from "../components/ConfirmModal";
+
+// Inside your component:
 
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
@@ -10,7 +14,9 @@ function AdminDashboard() {
   const [showCreateUser, setShowCreateUser] = useState(false);
   const [showCreateBranch, setShowCreateBranch] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
-
+  
+  const [notif, setNotif] = useState(null);
+  const [confirm, setConfirm] = useState({ show: false, type: '', id: null });
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
@@ -53,9 +59,10 @@ function AdminDashboard() {
       await api.createUser(newUser);
       setShowCreateUser(false);
       setNewUser({ name: "", email: "", passwordHash: "", role: "customer", branchId: null });
+      setNotif({ message: "User added successfully!", type: "success" });
       loadData();
     } catch (err) {
-      alert(`Failed to create user: ${err.message}`);
+      setNotif({ message: `Failed to create user: ${err.message}`, type: "error" });
     }
   };
 
@@ -65,29 +72,38 @@ function AdminDashboard() {
       await api.createBranch(newBranch);
       setShowCreateBranch(false);
       setNewBranch({ name: "", address: "" });
+      setNotif({ message: "Branch added successfully!", type: "success" });
       loadData();
     } catch (err) {
-      alert(`Failed to create branch: ${err.message}`);
+      setNotif({ message: `Failed to create branch: ${err.message}`, type: "error" });
     }
   };
 
-  const handleDeleteUser = async (userId) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
-    try {
-      await api.deleteUser(userId);
-      loadData();
-    } catch (err) {
-      alert("Failed to delete user: " + err.message);
-    }
+  const handleDeleteUser = (userId) => {
+    setConfirm({ show: true, type: 'user', id: userId });
   };
-  const handleDeleteBranch = async (branchId) => {
-    if (!window.confirm("Are you sure you want to delete this branch?")) return;
-    try {
-      await api.deleteBranch(branchId);
-      loadData();
-    } catch (err) {
-      alert("Failed to delete branch: " + err.message);
+  const handleDeleteBranch = (branchId) => {
+    setConfirm({ show: true, type: 'branch', id: branchId });
+  };
+  const confirmDelete = async () => {
+    if (confirm.type === 'user') {
+      try {
+        await api.deleteUser(confirm.id);
+        setNotif({ message: "User deleted successfully!", type: "success" });
+        loadData();
+      } catch (err) {
+        setNotif({ message: "Failed to delete user: " + err.message, type: "error" });
+      }
+    } else if (confirm.type === 'branch') {
+      try {
+        await api.deleteBranch(confirm.id);
+        setNotif({ message: "Branch deleted successfully!", type: "success" });
+        loadData();
+      } catch (err) {
+        setNotif({ message: "Failed to delete branch: " + err.message, type: "error" });
+      }
     }
+    setConfirm({ show: false, type: '', id: null });
   };
 
   const getRoleColor = (role) => {
@@ -103,8 +119,15 @@ function AdminDashboard() {
 
   return (
     <div className="admin-dashboard">
+      {notif && (
+        <CustomNotification
+          message={notif.message}
+          type={notif.type}
+          onClose={() => setNotif(null)}
+        />
+      )}
       <nav className="admin-nav">
-        <h1>Admin Dashboard</h1>
+        <h1 style={{ cursor: 'pointer' }} onClick={() => setActiveTab('overview')}>Admin Dashboard</h1>
         <div className="nav-tabs">
           <button 
             className={activeTab === "users" ? "active" : ""}
@@ -126,16 +149,9 @@ function AdminDashboard() {
           </button>
         </div>
       </nav>
-      <div style={{
-        background: "#e3e9f7",
-        color: "#2575fc",
-        padding: "0.5rem 2rem",
-        fontWeight: 600,
-        fontSize: "1.1rem",
-        letterSpacing: "1px"
-      }}>
-        Current App Time: {currentTime.toLocaleString()} ({Intl.DateTimeFormat().resolvedOptions().timeZone})
-      </div>
+      <span className="current-time">
+        🕒 {currentTime.toLocaleString()} ({Intl.DateTimeFormat().resolvedOptions().timeZone})
+      </span>
 
       <div className="content">
         {activeTab === "users" && (
@@ -149,12 +165,20 @@ function AdminDashboard() {
             
             <div className="users-grid">
               {users.map(user => (
-                <div key={user.id} className="user-item">
+                <div key={user.id} className="user-item" style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                  <button
+                    style={{ position: 'absolute', right: '1rem', top: '1rem', background: 'none', border: 'none', color: '#d32f2f', fontSize: '1.3rem', cursor: 'pointer', padding: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                    onClick={() => handleDeleteUser(user.id)}
+                    title="Delete"
+                  >
+                    🗑️
+                    <span style={{ fontSize: '0.75rem', color: '#d32f2f', marginTop: '0.1rem', fontWeight: 500 }}>Delete</span>
+                  </button>
                   <div className="user-avatar">
-                    {user.name.charAt(0).toUpperCase()}
+                    {user.name && user.name.length > 0 ? user.name[0].toUpperCase() : "?"}
                   </div>
                   <div className="user-info">
-                    <h3>{user.name}</h3>
+                    <h3>{user.name ? user.name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ') : ''}</h3>
                     <p>{user.email}</p>
                     <span 
                       className="role-badge"
@@ -163,12 +187,6 @@ function AdminDashboard() {
                       {user.role}
                     </span>
                     <p>Branch: {user.branch?.name || "None"}</p>
-                    <button
-                      style={{ background: "#d32f2f", marginTop: "0.5rem" }}
-                      onClick={() => handleDeleteUser(user.id)}
-                    >
-                      Delete
-                    </button>
                   </div>
                 </div>
               ))}
@@ -187,17 +205,19 @@ function AdminDashboard() {
             
             <div className="branches-grid">
               {branches.map(branch => (
-                <div key={branch.id} className="branch-item">
-                  <h3>{branch.name}</h3>
+                <div key={branch.id} className="branch-item" style={{ position: 'relative' }}>
+                  <button
+                    style={{ position: 'absolute', right: '1rem', top: '1rem', background: 'none', border: 'none', color: '#d32f2f', fontSize: '1.3rem', cursor: 'pointer', padding: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                    onClick={() => handleDeleteBranch(branch.id)}
+                    title="Delete"
+                  >
+                    🗑️
+                    <span style={{ fontSize: '0.75rem', color: '#d32f2f', marginTop: '0.1rem', fontWeight: 500 }}>Delete</span>
+                  </button>
+                  <h3>{branch.name ? branch.name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ') : ''}</h3>
                   <p>{branch.address}</p>
                   <p>Users: {branch.users?.length || 0}</p>
                   <p>Products: {branch.products?.length || 0}</p>
-                  <button
-                    style={{ background: "#d32f2f", marginTop: "0.5rem" }}
-                    onClick={() => handleDeleteBranch(branch.id)}
-                  >
-                    Delete
-                  </button>
                 </div>
               ))}
             </div>
@@ -315,6 +335,15 @@ function AdminDashboard() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Confirm Delete Modal */}
+      {confirm.show && (
+        <ConfirmModal
+          message="Do you want to delete?"
+          onConfirm={confirmDelete}
+          onCancel={() => setConfirm({ show: false, type: '', id: null })}
+        />
       )}
     </div>
   );

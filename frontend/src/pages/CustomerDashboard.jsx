@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { api } from "../services/api";
+import CustomNotification from "../components/CustomNotification"; // adjust path as needed
+
+// Inside your component:
+
 import "./CustomerDashboard.css";
 
 function CustomerDashboard() {
@@ -10,9 +14,11 @@ function CustomerDashboard() {
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [selectedAuction, setSelectedAuction] = useState(null);
   const [bidAmount, setBidAmount] = useState("");
+  const [notif, setNotif] = useState(null);
   // Get logged-in user from localStorage
   const user = JSON.parse(localStorage.getItem("auctionUser"));
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [filter, setFilter] = useState('active');
 
   useEffect(() => {
     loadAuctions();
@@ -37,11 +43,11 @@ function CustomerDashboard() {
 
   const handlePlaceBid = async (auctionId) => {
     if (!bidAmount || bidAmount <= 0) {
-      alert("Please enter a valid bid amount");
+      setNotif({ message: "Please enter a valid bid amount", type: "error" });
       return;
     }
     if (!user || !user.id) {
-      alert("User not found. Please log in again.");
+      setNotif({ message: "User not found. Please log in again.", type: "error" });
       return;
     }
     try {
@@ -51,16 +57,25 @@ function CustomerDashboard() {
         bidAmount: parseFloat(bidAmount)
       };
       await api.createBid(bid);
-      alert("Bid placed successfully!");
+      setNotif({ message: "Bid placed successfully!", type: "success" });
       setBidAmount("");
       setSelectedAuction(null);
       loadAuctions(); // Refresh auctions
     } catch (err) {
-      alert(`Failed to place bid: ${err.message}`);
+      setNotif({ message: `Failed to place bid: ${err.message}`, type: "error" });
     }
   };
 
-  const filteredAuctions = auctions.filter((auction) =>
+  // Filtered auctions based on filter state
+  const filteredAuctions = auctions.filter((auction) => {
+    const now = new Date();
+    const start = new Date(auction.startTime);
+    const end = new Date(auction.endTime);
+    const isActive = now >= start && now <= end;
+    if (filter === 'active') return isActive;
+    if (filter === 'past') return now > end;
+    return true;
+  }).filter((auction) =>
     auction.product?.name?.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -69,12 +84,19 @@ function CustomerDashboard() {
 
   return (
     <div className="dashboard-container">
+      {notif && (
+        <CustomNotification
+          message={notif.message}
+          type={notif.type}
+          onClose={() => setNotif(null)}
+        />
+      )}
       {/* Navbar */}
       <nav className="navbar">
         <div className="menu-icon" onClick={() => setSideMenuOpen(!sideMenuOpen)}>
           ☰
         </div>
-        <h2 className="logo">Belc Auctions</h2>
+        <h2 className="logo">Auction</h2>
         <input
           className="search-input"
           type="text"
@@ -100,9 +122,15 @@ function CustomerDashboard() {
       {sideMenuOpen && (
         <div className="side-menu">
           <ul>
-            <li>🔁 Active Bids</li>
-            <li>📜 Past Bids</li>
-            <li>🔓 Logout</li>
+            <li onClick={() => { setFilter('active'); setSideMenuOpen(false); }} style={{ color: filter === 'active' ? '#2575fc' : undefined }}>
+              🗂️ Active Bids
+            </li>
+            <li onClick={() => { setFilter('past'); setSideMenuOpen(false); }} style={{ color: filter === 'past' ? '#2575fc' : undefined }}>
+              📜 Past Bids
+            </li>
+            <li onClick={() => { localStorage.removeItem('auctionUser'); window.location.href = '/'; }}>
+              🔓 Logout
+            </li>
           </ul>
         </div>
       )}
@@ -122,7 +150,14 @@ function CustomerDashboard() {
                 Math.max(...auction.bids.map(b => b.bidAmount)) : 
                 auction.product?.basePrice || 0}</p>
               <p>Ends: {new Date(auction.endTime).toLocaleString()}</p>
-              <p>Status: {auction.status}</p>
+              <p>Status: {(() => {
+                const now = new Date();
+                const start = new Date(auction.startTime);
+                const end = new Date(auction.endTime);
+                if (now >= start && now <= end) return 'active';
+                if (now > end) return 'ended';
+                return 'upcoming';
+              })()}</p>
               <button 
                 onClick={() => setSelectedAuction(auction)}
                 disabled={auction.status !== "active"}

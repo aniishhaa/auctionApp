@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { api } from "../services/api";
 import "./StaffDashboard.css";
+import CustomNotification from "../components/CustomNotification";
+import ConfirmModal from "../components/ConfirmModal";
+
 
 function StaffDashboard() {
   const [auctions, setAuctions] = useState([]);
@@ -10,6 +13,8 @@ function StaffDashboard() {
   const [showCreateAuction, setShowCreateAuction] = useState(false);
   const [showCreateProduct, setShowCreateProduct] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [notif, setNotif] = useState(null);
+  const [confirm, setConfirm] = useState({ show: false, type: '', id: null });
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -30,6 +35,9 @@ function StaffDashboard() {
     branchId: 1
   });
   const [selectedAuction, setSelectedAuction] = useState(null);
+
+  const startTimeRef = useRef();
+  const endTimeRef = useRef();
 
   useEffect(() => {
     loadData();
@@ -57,9 +65,10 @@ function StaffDashboard() {
       await api.createAuction(newAuction);
       setShowCreateAuction(false);
       setNewAuction({ productId: "", startTime: "", endTime: "", status: "active" });
+      setNotif({ message: "Auction created successfully!", type: "success" });
       loadData();
     } catch (err) {
-      alert(`Failed to create auction: ${err.message}`);
+      setNotif({ message: `Failed to create auction: ${err.message}`, type: "error" });
     }
   };
 
@@ -69,38 +78,55 @@ function StaffDashboard() {
       await api.createProduct(newProduct);
       setShowCreateProduct(false);
       setNewProduct({ name: "", description: "", basePrice: "", imageUrl: "", tags: "", branchId: 1 });
+      setNotif({ message: "Product added successfully!", type: "success" });
       loadData();
     } catch (err) {
-      alert(`Failed to create product: ${err.message}`);
+      setNotif({ message: `Failed to create product: ${err.message}`, type: "error" });
     }
   };
 
   const handleDeleteAuction = async (auctionId) => {
-    if (!window.confirm("Are you sure you want to delete this auction?")) return;
-    try {
-      await api.deleteAuction(auctionId);
-      loadData(); // Refresh the list
-    } catch (err) {
-      alert("Failed to delete auction: " + err.message);
-    }
+    setConfirm({ show: true, type: 'auction', id: auctionId });
   };
 
   const handleDeleteProduct = async (productId) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
-    try {
-      await api.deleteProduct(productId);
-      loadData();
-    } catch (err) {
-      alert("Failed to delete product: " + err.message);
+    setConfirm({ show: true, type: 'product', id: productId });
+  };
+
+  const confirmDelete = async () => {
+    if (confirm.type === 'auction') {
+      try {
+        await api.deleteAuction(confirm.id);
+        setNotif({ message: "Auction deleted successfully!", type: "success" });
+        loadData();
+      } catch (err) {
+        setNotif({ message: "Failed to delete auction: " + err.message, type: "error" });
+      }
+    } else if (confirm.type === 'product') {
+      try {
+        await api.deleteProduct(confirm.id);
+        setNotif({ message: "Product deleted successfully!", type: "success" });
+        loadData();
+      } catch (err) {
+        setNotif({ message: "Failed to delete product: " + err.message, type: "error" });
+      }
     }
+    setConfirm({ show: false, type: '', id: null });
   };
 
   if (loading) return <div className="loading">Loading...</div>;
 
   return (
     <div className="staff-dashboard">
+      {notif && (
+        <CustomNotification
+          message={notif.message}
+          type={notif.type}
+          onClose={() => setNotif(null)}
+        />
+      )}
       <nav className="staff-nav">
-        <h1>Staff Dashboard</h1>
+        <h1 style={{ cursor: 'pointer' }} onClick={() => setActiveTab('auctions')}>Staff Dashboard</h1>
         <div className="nav-tabs">
           <button 
             className={activeTab === "auctions" ? "active" : ""}
@@ -116,17 +142,9 @@ function StaffDashboard() {
           </button>
         </div>
       </nav>
-      <div style={{
-        background: "#e3e9f7",
-        color: "#2575fc",
-        padding: "0.5rem 2rem",
-        fontWeight: 600,
-        fontSize: "1.1rem",
-        letterSpacing: "1px"
-      }}>
-        Current App Time: {currentTime.toLocaleString()} ({Intl.DateTimeFormat().resolvedOptions().timeZone})
-      </div>
-
+      <span className="current-time">
+        🕒 {currentTime.toLocaleString()} ({Intl.DateTimeFormat().resolvedOptions().timeZone})
+      </span>
       <div className="content">
         {activeTab === "auctions" && (
           <div className="auctions-section">
@@ -136,23 +154,24 @@ function StaffDashboard() {
                 Create New Auction
               </button>
             </div>
-            
             <div className="auctions-grid">
               {auctions.map(auction => (
-                <div key={auction.id} className="auction-item">
-                  <h3>{auction.product?.name || "Unknown Product"}</h3>
+                <div key={auction.id} className="auction-item" style={{ position: 'relative' }}>
+                  <button
+                    style={{ position: 'absolute', right: '1rem', top: '1rem', background: 'none', border: 'none', color: '#d32f2f', fontSize: '1.3rem', cursor: 'pointer', padding: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                    onClick={() => handleDeleteAuction(auction.id)}
+                    title="Delete"
+                  >
+                    🗑️
+                    <span style={{ fontSize: '0.75rem', color: '#d32f2f', marginTop: '0.1rem', fontWeight: 500 }}>Delete</span>
+                  </button>
+                  <h3>{auction.product?.name ? auction.product.name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ') : "Unknown Product"}</h3>
                   <p>Status: {auction.status}</p>
                   <p>Start: {new Date(auction.startTime).toLocaleString()}</p>
                   <p>End: {new Date(auction.endTime).toLocaleString()}</p>
                   <p>Bids: {auction.bids?.length || 0}</p>
                   <button onClick={() => setSelectedAuction(auction)}>
                     View Bids
-                  </button>
-                  <button
-                    style={{ background: "#d32f2f", marginLeft: "0.5rem" }}
-                    onClick={() => handleDeleteAuction(auction.id)}
-                  >
-                    Delete
                   </button>
                 </div>
               ))}
@@ -168,21 +187,22 @@ function StaffDashboard() {
                 Add New Product
               </button>
             </div>
-            
             <div className="products-grid">
               {products.map(product => (
-                <div key={product.id} className="product-item">
+                <div key={product.id} className="product-item" style={{ position: 'relative' }}>
+                  <button
+                    style={{ position: 'absolute', right: '1rem', top: '1rem', background: 'none', border: 'none', color: '#d32f2f', fontSize: '1.3rem', cursor: 'pointer', padding: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                    onClick={() => handleDeleteProduct(product.id)}
+                    title="Delete"
+                  >
+                    🗑️
+                    <span style={{ fontSize: '0.75rem', color: '#d32f2f', marginTop: '0.1rem', fontWeight: 500 }}>Delete</span>
+                  </button>
                   <img src={product.imageUrl || "https://via.placeholder.com/150"} alt={product.name} />
-                  <h3>{product.name}</h3>
+                  <h3>{product.name ? product.name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ') : ''}</h3>
                   <p>{product.description}</p>
                   <p>Base Price: ₹{product.basePrice}</p>
                   <p>Branch: {product.branch?.name || "Unknown"}</p>
-                  <button
-                    style={{ background: "#d32f2f", marginTop: "0.5rem" }}
-                    onClick={() => handleDeleteProduct(product.id)}
-                  >
-                    Delete
-                  </button>
                 </div>
               ))}
             </div>
@@ -211,12 +231,14 @@ function StaffDashboard() {
                 value={newAuction.startTime}
                 onChange={(e) => setNewAuction({...newAuction, startTime: e.target.value})}
                 required
+                style={{ width: '100%', cursor: 'pointer' }}
               />
               <input
                 type="datetime-local"
                 value={newAuction.endTime}
                 onChange={(e) => setNewAuction({...newAuction, endTime: e.target.value})}
                 required
+                style={{ width: '100%', cursor: 'pointer' }}
               />
               <div className="modal-buttons">
                 <button type="submit">Create Auction</button>
@@ -296,6 +318,15 @@ function StaffDashboard() {
             <button onClick={() => setSelectedAuction(null)}>Close</button>
           </div>
         </div>
+      )}
+
+      {/* Confirm Delete Modal */}
+      {confirm.show && (
+        <ConfirmModal
+          message="Do you want to delete?"
+          onConfirm={confirmDelete}
+          onCancel={() => setConfirm({ show: false, type: '', id: null })}
+        />
       )}
     </div>
   );

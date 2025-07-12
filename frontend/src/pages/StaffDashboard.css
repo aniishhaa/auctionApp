@@ -254,6 +254,35 @@
   color: #388e3c;
 }
 
+.admin-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.current-time {
+  display: block;
+  background: #e3e9f7;
+  color: #111;
+  padding: 0.5rem 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  text-align: right;
+}
+
+.content {
+  padding-left: 2.5vw;
+  padding-right: 2.5vw;
+}
+
 @media (max-width: 700px) {
   .auctions-grid, .products-grid, .users-grid, .branches-grid, .stats-grid {
     grid-template-columns: 1fr;
