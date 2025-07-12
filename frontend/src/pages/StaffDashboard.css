@@ -1,0 +1,267 @@
+.staff-dashboard, .admin-dashboard {
+  min-height: 100vh;
+  background: #f4f6fb;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.staff-nav, .admin-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #2575fc;
+  color: #fff;
+  padding: 1.2rem 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.staff-nav h1, .admin-nav h1 {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-tabs button {
+  background: #fff;
+  color: #2575fc;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.nav-tabs button.active, .nav-tabs button:hover {
+  background: #1a5bb8;
+  color: #fff;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 2rem 0 1rem 0;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.section-header button {
+  background: #2575fc;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.section-header button:hover {
+  background: #1a5bb8;
+}
+
+.auctions-grid, .products-grid, .users-grid, .branches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem 0 2rem 0;
+}
+
+.auction-item, .product-item, .user-item, .branch-item {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: box-shadow 0.2s;
+}
+
+.auction-item:hover, .product-item:hover, .user-item:hover, .branch-item:hover {
+  box-shadow: 0 8px 24px rgba(37,117,252,0.10);
+}
+
+.auction-item h3, .product-item h3, .user-item h3, .branch-item h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: #2575fc;
+}
+
+.product-item img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.7rem;
+}
+
+.card-details p, .auction-item p, .product-item p, .user-item p, .branch-item p {
+  margin: 0.3rem 0;
+  color: #444;
+  font-size: 0.97rem;
+}
+
+.auction-item button, .product-item button, .user-item button, .branch-item button {
+  margin-top: 1rem;
+  background: #2575fc;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.auction-item button:hover, .product-item button:hover, .user-item button:hover, .branch-item button:hover {
+  background: #1a5bb8;
+}
+
+.loading, .error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.error {
+  color: #d32f2f;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  padding: 2rem 2.5rem;
+  border-radius: 16px;
+  min-width: 350px;
+  max-width: 95vw;
+  box-shadow: 0 8px 32px rgba(37,117,252,0.13);
+}
+
+.modal h3 {
+  margin: 0 0 1rem 0;
+  color: #2575fc;
+}
+
+.modal input, .modal textarea, .modal select {
+  width: 100%;
+  padding: 0.7rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin: 0.7rem 0;
+  font-size: 1rem;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  background: #2575fc;
+  color: #fff;
+  transition: background 0.2s;
+}
+
+.modal-buttons button:last-child {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.modal-buttons button:hover {
+  opacity: 0.9;
+}
+
+.user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #2575fc;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0.3rem 0;
+  color: #fff;
+}
+
+.stats-grid {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+  padding: 1.5rem 2rem;
+  min-width: 180px;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #2575fc;
+  margin: 0.5rem 0;
+}
+
+.stat-status {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #388e3c;
+}
+
+@media (max-width: 700px) {
+  .auctions-grid, .products-grid, .users-grid, .branches-grid, .stats-grid {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .modal {
+    padding: 1rem;
+    min-width: 90vw;
+  }
+}

@@ -1,0 +1,48 @@
+# .NET Core
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.vs/
+
+# ASP.NET Secrets
+secrets.json
+
+# Build Results
+[Dd]ebug/
+[Rr]elease/
+
+# NPM/Node
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+
+# Vite
+/dist
+
+# Others
+*.swp
+*.tmp
+
+# Visual Studio Code
+.vscode/
+
+# SQL Server
+*.mdf
+*.ldf
+
+# Publish
+publish/ 

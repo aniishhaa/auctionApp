@@ -1,0 +1,222 @@
+/* Navbar */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #2575fc;
+  color: white;
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.menu-icon {
+  font-size: 1.8rem;
+  cursor: pointer;
+  margin-right: 1rem;
+}
+
+/* Search + Bid */
+.search-input {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: none;
+  width: 250px;
+}
+
+.bid-button {
+  background-color: #ffffff;
+  color: #2575fc;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.bid-button:hover {
+  background-color: #f0f0f0;
+}
+
+/* Side Menu */
+.side-menu {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  width: 200px;
+  background-color: white;
+  border-right: 1px solid #ccc;
+  padding: 1rem;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.side-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.side-menu li {
+  padding: 0.75rem 0;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  font-weight: 500;
+}
+
+.side-menu li:hover {
+  background-color: #f7f7f7;
+}
+
+/* Auction List */
+.auction-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.auction-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.auction-card:hover {
+  transform: translateY(-4px);
+}
+
+.auction-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-details {
+  padding: 1.5rem;
+}
+
+.card-details h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.card-details p {
+  margin: 0.5rem 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.card-details button {
+  width: 100%;
+  background-color: #2575fc;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.card-details button:hover:not(:disabled) {
+  background-color: #1a5bb8;
+}
+
+.card-details button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Loading and Error States */
+.loading, .error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.error {
+  color: #d32f2f;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  min-width: 400px;
+  max-width: 500px;
+}
+
+.modal h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+.modal p {
+  margin: 0.5rem 0;
+  color: #666;
+}
+
+.modal input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin: 1rem 0;
+  font-size: 1rem;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.modal-buttons button:first-child {
+  background-color: #2575fc;
+  color: white;
+}
+
+.modal-buttons button:last-child {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.modal-buttons button:hover {
+  opacity: 0.9;
+}
