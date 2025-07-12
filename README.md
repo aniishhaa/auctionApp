@@ -91,8 +91,8 @@ The frontend will be available at `http://localhost:5173`
 
 ### **Backend (dotnet/EF Core)**
 - `dotnet restore` — Restore NuGet packages
-- `dotnet build` — Build the API
-- `dotnet run` — Run the API
+- `dotnet build` — Build the API.
+- `dotnet run` — Run the API.
 - `dotnet ef migrations add <Name>` — Add a new migration
 - `dotnet ef database update` — Apply migrations to the database
 - `dotnet ef migrations list` — List all migrations
