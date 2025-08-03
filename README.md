@@ -189,6 +189,3 @@ The frontend will be available at `http://localhost:5173`
 4. Submit a pull request
 
 ---
-
-## 📄 License
-This project is for educational and demonstration purposes. 
